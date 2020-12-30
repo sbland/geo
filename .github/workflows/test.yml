@@ -72,7 +72,12 @@ jobs:
     container:
       image: georust/geo-ci
     steps:
-      - name: Checkout repository
+      - name: Checkout master
         uses: actions/checkout@v2
-      - run: cargo bench --no-run
+        with:
+          ref: master
+      - run: cargo bench
+      - name: Checkout PR branch
+        uses: actions/checkout@v2
+      - run: cargo bench
 
