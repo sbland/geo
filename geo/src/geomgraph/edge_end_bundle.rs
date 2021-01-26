@@ -219,9 +219,18 @@ where
         // JTS:     label.setLocation(geomIndex, loc);
         // JTS:
         // JTS:   }
-        self.label
-            .as_mut()
-            .map(|l| l.set_on_location(geom_index, location));
+        if let Some(location) = location {
+            self.label
+                .as_mut()
+                .map(|l| l.set_on_location(geom_index, location));
+        } else {
+            self.label.as_mut().map(|l| {
+                assert!(
+                    l.on_location(geom_index).is_none(),
+                    "diverging from JTS, which would have clobbered the existing location here"
+                )
+            });
+        }
     }
 
     // JTS:   /**
