@@ -224,11 +224,16 @@ where
                 .as_mut()
                 .map(|l| l.set_on_location(geom_index, location));
         } else {
-            self.label.as_mut().map(|l| {
-                assert!(
+            self.label.as_ref().map(|l| {
+                // This is technically a diversion from JTS, but I don't think we'd ever
+                // get here, unless `l.on_location` was *already* None, in which cases this is a
+                // no-op, so assert that assumption.
+                // If this assert is rightfully triggered, we may need to add a method like
+                // `l.clear_on_location(geom_index)`
+                debug_assert!(
                     l.on_location(geom_index).is_none(),
-                    "diverging from JTS, which would have clobbered the existing location here"
-                )
+                    "diverging from JTS, which would have replaced the existing Location with None"
+                );
             });
         }
     }
